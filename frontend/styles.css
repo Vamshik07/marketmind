@@ -1,0 +1,42 @@
+/* Global */
+body {
+    background-color: #0f172a;
+    color: #e5e7eb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #38bdf8;
+}
+
+/* Cards */
+.card {
+    background: #020617;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(56,189,248,0.15);
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    color: black;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 10px 20px;
+    border: none;
+    transition: 0.3s;
+}
+
+.stButton > button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(56,189,248,0.7);
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #020617;
+    border-right: 1px solid #1e293b;
+}

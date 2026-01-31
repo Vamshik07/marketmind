@@ -1,0 +1,335 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    MARKETMIND QUICK REFERENCE CARD                              ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════════
+🚀 QUICK START
+═══════════════════════════════════════════════════════════════════════════════════
+
+1. Configure .env
+   GMAIL_ADDRESS=your-email@gmail.com
+   GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+
+2. Run verify_system.py
+   python verify_system.py
+
+3. Start server
+   python app.py
+
+4. Visit
+   http://127.0.0.1:5000
+
+═══════════════════════════════════════════════════════════════════════════════════
+🔑 USER FLOWS
+═══════════════════════════════════════════════════════════════════════════════════
+
+SIGNUP → /signup
+  Name, Email, Password (must follow rules)
+  ↓
+  Verification email sent
+  ↓
+  Click email link (24h expiry)
+  ↓
+  Email verified ✅
+
+LOGIN → /login
+  Email + Password
+  ↓
+  Session created
+  ↓
+  Access features ✅
+
+FORGOT PASSWORD → /login (click "Forgot?")
+  Enter email
+  ↓
+  Reset email sent
+  ↓
+  Click email link (1h expiry)
+  ↓
+  Enter new password
+  ↓
+  Updated ✅
+
+HISTORY → /history
+  View activities (grouped by date)
+  Copy, Download, Delete, or Clear ✅
+
+═══════════════════════════════════════════════════════════════════════════════════
+🔐 PASSWORD REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════════
+
+✓ Valid:    MyPassword@123
+✓ Valid:    Secret-Pass99
+✓ Valid:    Test@Pass1
+
+✗ Invalid:  password      (no digit, no special char)
+✗ Invalid:  Pass123       (no special char)
+✗ Invalid:  !Password123  (special char at start)
+✗ Invalid:  Password123!  (special char at end)
+
+RULES:
+  • Minimum 7 characters
+  • At least 1 digit (0-9)
+  • At least 1 special char (!, -, ))
+  • Special char NOT at start or end
+
+═══════════════════════════════════════════════════════════════════════════════════
+📝 COMMON COMMANDS
+═══════════════════════════════════════════════════════════════════════════════════
+
+Start Server
+  python app.py
+
+Verify System Setup
+  python verify_system.py
+
+Check Users in Database
+  sqlite3 marketmind.db "SELECT id, name, email, is_verified FROM users;"
+
+View User History
+  sqlite3 marketmind.db "SELECT user_id, action_type, timestamp FROM \
+  user_history ORDER BY timestamp DESC LIMIT 10;"
+
+Reset Database
+  rm marketmind.db
+  python app.py  # Creates new database
+
+═══════════════════════════════════════════════════════════════════════════════════
+🌐 URLs REFERENCE
+═══════════════════════════════════════════════════════════════════════════════════
+
+Public Pages (no login needed)
+  GET  /               → Login page (redirects if logged in)
+  GET  /login          → Login form
+  GET  /signup         → Signup form
+  GET  /forgot-password → Forgot password form
+
+Protected Pages (login required)
+  GET  /               → Home page
+  GET  /campaign       → Campaign generator
+  GET  /pitch          → Sales pitch generator
+  GET  /lead-score     → Lead scoring
+  GET  /history        → User activity history
+
+Auth Routes
+  GET  /logout         → Logout (clears session)
+  GET  /verify/<token> → Email verification
+  POST /verify/<token> → Email verification form
+
+API Endpoints (login required)
+  POST /api/generate-campaign
+  POST /api/generate-pitch
+  POST /api/score-lead
+  GET  /api/history/grouped
+  DELETE /api/history/delete/<id>
+  DELETE /api/history/clear
+
+═══════════════════════════════════════════════════════════════════════════════════
+⚙️ CONFIGURATION (.env)
+═══════════════════════════════════════════════════════════════════════════════════
+
+GROQ_API_KEY=gsk_...
+  └─ AI model API key
+
+SECRET_KEY=your-secret-key
+  └─ Session signing secret (change in production!)
+
+GMAIL_ADDRESS=your-email@gmail.com
+  └─ Gmail address for email sending
+
+GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+  └─ Gmail App Password (from myaccount.google.com/apppasswords)
+
+APP_URL=http://127.0.0.1:5000
+  └─ Application URL (change for production)
+
+═══════════════════════════════════════════════════════════════════════════════════
+🔒 SECURITY CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════════
+
+✅ Passwords hashed (Werkzeug PBKDF2)
+✅ Tokens signed (itsdangerous)
+✅ Sessions secure (HTTPOnly cookies)
+✅ Email verified (24h token)
+✅ Password reset (1h token)
+✅ Input validated (server + client)
+✅ Per-user data isolation
+✅ No plaintext secrets in code
+✅ All config in .env
+
+═══════════════════════════════════════════════════════════════════════════════════
+🐛 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════════
+
+Email not received?
+  → Check .env: GMAIL_ADDRESS, GMAIL_APP_PASSWORD
+  → Verify Gmail 2-Step Verification enabled
+  → Check spam folder
+  → Review Flask console for errors
+
+Login fails?
+  → Verify email is verified (check inbox)
+  → Confirm password is correct
+  → Clear browser cookies
+  → Check database exists: marketmind.db
+
+History not showing?
+  → Verify logged in
+  → Check user_id in database
+  → Try different date filters
+
+Port 5000 in use?
+  → Edit app.py: app.run(port=5001)
+  → Or kill process: lsof -i :5000
+
+Module not found?
+  → pip install -r requirements.txt --force-reinstall
+
+═══════════════════════════════════════════════════════════════════════════════════
+📚 DOCUMENTATION FILES
+═══════════════════════════════════════════════════════════════════════════════════
+
+READ FIRST
+  GETTING_STARTED.txt
+  └─ Visual overview and quick start
+
+MAIN GUIDE
+  README.md
+  └─ Complete feature documentation
+
+ARCHITECTURE
+  AUTH_SYSTEM_SETUP.md
+  └─ System design and setup details
+
+TESTING
+  TESTING_GUIDE.md
+  └─ 10+ test scenarios with steps
+
+FEATURES
+  FEATURE_CHECKLIST.md
+  └─ Complete feature inventory
+
+QUICK REFERENCE
+  This file!
+
+═══════════════════════════════════════════════════════════════════════════════════
+📊 DATABASE TABLES
+═══════════════════════════════════════════════════════════════════════════════════
+
+users
+  id              INTEGER PRIMARY KEY
+  name            TEXT NOT NULL
+  email           TEXT UNIQUE NOT NULL
+  password_hash   TEXT NOT NULL
+  is_verified     BOOLEAN DEFAULT 0
+  created_at      DATETIME
+  updated_at      DATETIME
+
+user_history
+  id              INTEGER PRIMARY KEY
+  user_id         INTEGER (FK → users.id)
+  page_url        TEXT NOT NULL
+  page_title      TEXT
+  action_type     TEXT NOT NULL
+  metadata        TEXT (JSON)
+  timestamp       DATETIME
+  ip_address      TEXT
+  user_agent      TEXT
+
+═══════════════════════════════════════════════════════════════════════════════════
+🎯 KEY FILES
+═══════════════════════════════════════════════════════════════════════════════════
+
+Python Code
+  app.py                    Flask application (500+ lines)
+  backend/auth.py           Authentication (300+ lines)
+  backend/email_utils.py    Email sending (150+ lines)
+  backend/history.py        Activity logging (200+ lines)
+  backend/database.py       Database ops (800+ lines)
+
+Templates
+  frontend/templates/signup.html
+  frontend/templates/login.html
+  frontend/templates/forgot_password.html
+  frontend/templates/reset_password.html
+  + 6 more verification and success pages
+
+Configuration
+  .env                      Environment variables
+  requirements.txt          Python dependencies
+
+Utilities
+  verify_system.py          System verification
+
+Documentation
+  README.md
+  AUTH_SYSTEM_SETUP.md
+  TESTING_GUIDE.md
+  FEATURE_CHECKLIST.md
+  DOCUMENTATION_INDEX.md
+
+═══════════════════════════════════════════════════════════════════════════════════
+⚡ FAST REFERENCE
+═══════════════════════════════════════════════════════════════════════════════════
+
+SIGNUP VALIDATION RULES
+  ✓ Email format valid
+  ✓ Password meets strength rules
+  ✓ Email not already registered
+
+EMAIL VERIFICATION TOKEN EXPIRY
+  24 hours (can be adjusted in auth.py)
+
+PASSWORD RESET TOKEN EXPIRY
+  1 hour (can be adjusted in auth.py)
+
+SESSION LIFETIME
+  365 days (can be adjusted in app.py)
+
+PASSWORD HASHING
+  Werkzeug PBKDF2 (industry standard)
+
+TOKEN SIGNING
+  itsdangerous URLSafeTimedSerializer
+
+═══════════════════════════════════════════════════════════════════════════════════
+✅ VALIDATION CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════════
+
+Before Deployment:
+  [ ] .env configured with Gmail credentials
+  [ ] verify_system.py passes all checks
+  [ ] Local testing complete
+  [ ] Password reset flow tested
+  [ ] History tracking working
+  [ ] Protected routes verified
+  [ ] No 404 errors
+  [ ] Email sending verified
+
+Production:
+  [ ] SECRET_KEY changed to strong value
+  [ ] SESSION_COOKIE_SECURE = True
+  [ ] HTTPS enabled
+  [ ] Using gunicorn (not Flask dev server)
+  [ ] Regular database backups
+  [ ] Error logging configured
+  [ ] Monitoring set up
+
+═══════════════════════════════════════════════════════════════════════════════════
+💡 TIPS & TRICKS
+═══════════════════════════════════════════════════════════════════════════════════
+
+✓ Use test@gmail.com for testing (requires real Gmail)
+✓ Check Flask console output for detailed error messages
+✓ Use browser dev tools to inspect network requests
+✓ Database queries have indexes for performance
+✓ All timestamps stored in UTC
+✓ Metadata stored as JSON in history table
+✓ Sessions use signed cookies (tamper-proof)
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+                    Questions? Check the documentation!
+                    Start with: GETTING_STARTED.txt
+
+═══════════════════════════════════════════════════════════════════════════════════

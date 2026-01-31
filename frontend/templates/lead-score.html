@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Lead Qualifier - MarketAI Suite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-section">
+        <h2>Lead Qualifier</h2>
+        <p class="subtitle">Identify and prioritize high-value leads with AI-powered scoring</p>
+        
+        <form id="leadForm">
+            <div class="form-group">
+                <label for="leadName">Lead Name</label>
+                <input type="text" id="leadName" name="name" placeholder="e.g., Rajesh Kumar, John Smith" required>
+            </div>
+
+            <div class="form-group">
+                <label for="budget">Budget Quality</label>
+                <textarea id="budget" name="budget" placeholder="e.g., High, Medium, Low, $50k-$100k annual" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="need">Business Need</label>
+                <textarea id="need" name="need" placeholder="e.g., Critical, Important, Premium Expansion" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="urgency">Urgency Level</label>
+                <textarea id="urgency" name="urgency" placeholder="e.g., Immediate, Short-term, 6-week deadline" required></textarea>
+            </div>
+
+            <div class="error-message" id="leadError"></div>
+            <div class="success-message" id="leadSuccess">Lead analysis completed successfully!</div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">SCORE LEAD</button>
+                <button type="reset" class="btn btn-secondary">CLEAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="leadLoading">
+        <div class="spinner"></div>
+        <p>Analyzing lead qualification...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section hidden" id="leadResults">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem">
+            <h3>Lead Qualification Analysis</h3>
+            <div class="result-actions">
+                <button class="btn-chip" id="copyLead">Copy</button>
+                <button class="btn-chip" id="downloadLead">Export</button>
+            </div>
+        </div>
+        <div class="gauge-wrap mt-2">
+            <div class="gauge" id="leadGauge"><div class="value" id="leadScoreValue">--</div></div>
+            <div style="flex:1">
+                <div class="result-content" id="leadOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('leadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('leadName').value;
+    const budget = document.getElementById('budget').value;
+    const need = document.getElementById('need').value;
+    const urgency = document.getElementById('urgency').value;
+    
+    const errorDiv = document.getElementById('leadError');
+    const successDiv = document.getElementById('leadSuccess');
+    const loadingDiv = document.getElementById('leadLoading');
+    const resultsDiv = document.getElementById('leadResults');
+    
+    // Reset messages
+    errorDiv.classList.remove('active');
+    successDiv.classList.remove('active');
+    resultsDiv.classList.add('hidden');
+    
+    // Show loading
+    loadingDiv.classList.add('active');
+    
+    try {
+        const response = await fetch('/api/score-lead', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                budget: budget,
+                need: need,
+                urgency: urgency
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to score lead');
+        }
+        
+        // Display results
+        loadingDiv.classList.remove('active');
+        document.getElementById('leadOutput').innerHTML = formatText(data.result);
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.classList.add('fade-in');
+        successDiv.classList.add('active');
+        
+        // Scroll to results
+        setTimeout(() => {
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        
+    } catch (error) {
+        loadingDiv.classList.remove('active');
+        errorDiv.textContent = error.message;
+        errorDiv.classList.add('active');
+    }
+});
+
+function formatText(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^### (.*?)$/gm, '<h4>$1</h4>')
+        .replace(/^## (.*?)$/gm, '<h3>$1</h3>')
+        .replace(/^# (.*?)$/gm, '<h2>$1</h2>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Pitch Creator - MarketAI Suite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-section">
+        <h2>Sales Pitch Creator</h2>
+        <p class="subtitle">Craft compelling, personalized sales pitches for your target customers</p>
+        
+        <form id="pitchForm">
+            <div class="form-group">
+                <label for="pitchProduct">Product Name</label>
+                <input type="text" id="pitchProduct" name="product" placeholder="e.g., Dairy Milk SRS, Premium Chocolate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pitchPersona">Customer Persona</label>
+                <textarea id="pitchPersona" name="persona" placeholder="e.g., CTO at Fortune 500 retail company, scaling operations across 500 stores" required></textarea>
+            </div>
+
+            <div class="error-message" id="pitchError"></div>
+            <div class="success-message" id="pitchSuccess">Pitch generated successfully!</div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">GENERATE PITCH</button>
+                <button type="reset" class="btn btn-secondary">CLEAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="pitchLoading">
+        <div class="spinner"></div>
+        <p>Crafting your personalized pitch...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section hidden" id="pitchResults">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem">
+            <h3>Your Sales Pitch</h3>
+            <div class="result-actions">
+                <button class="btn-chip" id="copyPitch">Copy</button>
+                <button class="btn-chip" id="downloadPitch">Export</button>
+            </div>
+        </div>
+        <div class="result-content" id="pitchOutput"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('pitchForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const product = document.getElementById('pitchProduct').value;
+    const persona = document.getElementById('pitchPersona').value;
+    
+    const errorDiv = document.getElementById('pitchError');
+    const successDiv = document.getElementById('pitchSuccess');
+    const loadingDiv = document.getElementById('pitchLoading');
+    const resultsDiv = document.getElementById('pitchResults');
+    
+    // Reset messages
+    errorDiv.classList.remove('active');
+    successDiv.classList.remove('active');
+    resultsDiv.classList.add('hidden');
+    
+    // Show loading
+    loadingDiv.classList.add('active');
+    
+    try {
+        const response = await fetch('/api/generate-pitch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product: product,
+                persona: persona
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to generate pitch');
+        }
+        
+        // Display results
+        loadingDiv.classList.remove('active');
+        document.getElementById('pitchOutput').innerHTML = formatText(data.result);
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.classList.add('fade-in');
+        successDiv.classList.add('active');
+        
+        // Scroll to results
+        setTimeout(() => {
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        
+    } catch (error) {
+        loadingDiv.classList.remove('active');
+        errorDiv.textContent = error.message;
+        errorDiv.classList.add('active');
+    }
+});
+
+function formatText(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^### (.*?)$/gm, '<h4>$1</h4>')
+        .replace(/^## (.*?)$/gm, '<h3>$1</h3>')
+        .replace(/^# (.*?)$/gm, '<h2>$1</h2>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+}
+</script>
+{% endblock %}

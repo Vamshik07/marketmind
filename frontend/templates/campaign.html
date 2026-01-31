@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Campaign Generator - MarketAI Suite{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-section">
+        <h2>Campaign Generator</h2>
+        <p class="subtitle">Create data-driven marketing campaigns tailored to your audience and platform</p>
+        
+        <form id="campaignForm">
+            <div class="form-group">
+                <label for="product">Product Name</label>
+                <input type="text" id="product" name="product" placeholder="e.g., Dairy Milk SRS, AI Analytics Platform" required>
+            </div>
+
+            <div class="form-group">
+                <label for="audience">Target Audience</label>
+                <textarea id="audience" name="audience" placeholder="e.g., Health-conscious millennials, Enterprise CIOs" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="platforms">Marketing Platforms</label>
+                <div class="platforms-select" id="platforms">
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="LinkedIn"><div class="platform-icon">in</div><div>LinkedIn</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="Facebook"><div class="platform-icon">f</div><div>Facebook</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="Instagram"><div class="platform-icon">📷</div><div>Instagram</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="Twitter"><div class="platform-icon">𝕏</div><div>Twitter/X</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="YouTube"><div class="platform-icon">▶</div><div>YouTube</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="Email"><div class="platform-icon">✉</div><div>Email</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="TikTok"><div class="platform-icon">♪</div><div>TikTok</div></label>
+                    <label class="platform-toggle" tabindex="0" role="checkbox" aria-checked="false"><input type="checkbox" name="platforms" value="WhatsApp"><div class="platform-icon">💬</div><div>WhatsApp</div></label>
+                </div>
+            </div>
+
+            <div class="error-message" id="campaignError"></div>
+            <div class="success-message" id="campaignSuccess">Campaign generated successfully!</div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">GENERATE CAMPAIGN</button>
+                <button type="reset" class="btn btn-secondary">CLEAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="campaignLoading">
+        <div class="spinner"></div>
+        <p>Generating your campaign strategy...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section hidden" id="campaignResults">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem">
+            <h3>Campaign Intelligence</h3>
+            <div class="result-actions">
+                <button class="btn-chip" id="copyCampaign">Copy</button>
+                <button class="btn-chip" id="downloadCampaign">Export</button>
+            </div>
+        </div>
+        <div class="result-content" id="campaignOutput"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('campaignForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const product = document.getElementById('product').value;
+    const audience = document.getElementById('audience').value;
+    // collect selected platforms
+    const platformInputs = document.querySelectorAll('#platforms input[name="platforms"]:checked');
+    const platform = Array.from(platformInputs).map(i=>i.value).join(', ');
+    
+    const errorDiv = document.getElementById('campaignError');
+    const successDiv = document.getElementById('campaignSuccess');
+    const loadingDiv = document.getElementById('campaignLoading');
+    const resultsDiv = document.getElementById('campaignResults');
+    
+    // Reset messages
+    errorDiv.classList.remove('active');
+    successDiv.classList.remove('active');
+    resultsDiv.classList.add('hidden');
+    
+    // Show loading
+    loadingDiv.classList.add('active');
+    
+    try {
+        const response = await fetch('/api/generate-campaign', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product: product,
+                audience: audience,
+                platform: platform
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to generate campaign');
+        }
+        
+        // Display results
+        loadingDiv.classList.remove('active');
+        document.getElementById('campaignOutput').innerHTML = formatText(data.result);
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.classList.add('fade-in');
+        successDiv.classList.add('active');
+        
+        // Scroll to results
+        setTimeout(() => {
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        
+    } catch (error) {
+        loadingDiv.classList.remove('active');
+        errorDiv.textContent = error.message;
+        errorDiv.classList.add('active');
+    }
+});
+
+function formatText(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^### (.*?)$/gm, '<h4>$1</h4>')
+        .replace(/^## (.*?)$/gm, '<h3>$1</h3>')
+        .replace(/^# (.*?)$/gm, '<h2>$1</h2>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+}
+</script>
+{% endblock %}

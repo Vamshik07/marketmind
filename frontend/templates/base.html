@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MarketAI Suite{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">
+    <script src="{{ url_for('static', filename='js/history-tracker.js') }}"></script>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/marketai-logo.svg') }}" alt="MarketAI Suite Logo" class="logo-img">
+                <span class="logo-text">MarketAI Suite</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+                <button id="colorModeToggle" aria-pressed="false" aria-label="Toggle dark mode" class="btn btn-secondary dark-mode-btn" style="padding:0.45rem 0.75rem; font-size:0.9rem">Dark</button>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                    <li><a href="/campaign" class="{% if request.path == '/campaign' %}active{% endif %}">Campaign</a></li>
+                    <li><a href="/pitch" class="{% if request.path == '/pitch' %}active{% endif %}">Pitch</a></li>
+                    <li><a href="/lead-score" class="{% if request.path == '/lead-score' %}active{% endif %}">Lead Score</a></li>
+                    <li><a href="/history" class="{% if request.path == '/history' %}active{% endif %}">📊 History</a></li>
+                    <li><a href="/logout" class="logout-link">🚪 Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Floating History Button -->
+    <a href="/history" class="floating-history-btn" title="View Activity History">
+        <span style="font-size: 1.5rem;">📊</span>
+    </a>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modern.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

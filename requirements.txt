@@ -1,4 +1,7 @@
 flask==3.0.0
 groq==0.4.1
 python-dotenv==1.0.0
+werkzeug==3.0.0
+itsdangerous==2.1.2
 gunicorn
+flask-cors

@@ -4,6 +4,11 @@ import uuid
 from datetime import timedelta
 from dotenv import load_dotenv
 from backend.ai_engine import generate_response
+app = Flask(__name__)
+from flask_cors import CORS
+CORS(app)
+
+
 from backend.prompts import (
     campaign_prompt,
     sales_prompt,
@@ -479,5 +484,5 @@ def server_error(e):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run( host='127.0.0.1', port=5000)
 

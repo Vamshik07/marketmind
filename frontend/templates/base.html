@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MarketAI Suite{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">
     <script src="{{ url_for('static', filename='js/history-tracker.js') }}"></script>
 </head>
@@ -14,21 +15,56 @@
     <!-- Navigation Header -->
     <header>
         <div class="navbar">
-            <div class="logo">
+            <a class="logo" href="/" aria-label="Go to Home">
                 <img src="{{ url_for('static', filename='images/marketai-logo.svg') }}" alt="MarketAI Suite Logo" class="logo-img">
                 <span class="logo-text">MarketAI Suite</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem">
-                <button id="colorModeToggle" aria-pressed="false" aria-label="Toggle dark mode" class="btn btn-secondary dark-mode-btn" style="padding:0.45rem 0.75rem; font-size:0.9rem">Dark</button>
-            </div>
+            </a>
             <nav>
                 <ul>
                     <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
-                    <li><a href="/campaign" class="{% if request.path == '/campaign' %}active{% endif %}">Campaign</a></li>
-                    <li><a href="/pitch" class="{% if request.path == '/pitch' %}active{% endif %}">Pitch</a></li>
-                    <li><a href="/lead-score" class="{% if request.path == '/lead-score' %}active{% endif %}">Lead Score</a></li>
-                    <li><a href="/history" class="{% if request.path == '/history' %}active{% endif %}">📊 History</a></li>
-                    <li><a href="/logout" class="logout-link">🚪 Logout</a></li>
+                    <li class="profile-menu-wrapper">
+                        <button class="profile-btn" id="profileBtn" aria-label="Profile menu">
+                            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-email">{{ current_user['email'] if current_user else 'user@example.com' }}</div>
+                            <div class="profile-divider"></div>
+                            <a href="/history" class="profile-logout">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v4"></path>
+                                    <path d="M4.93 4.93l2.83 2.83"></path>
+                                    <path d="M2 12h4"></path>
+                                    <path d="M4.93 19.07l2.83-2.83"></path>
+                                    <path d="M12 22v-4"></path>
+                                    <path d="M19.07 19.07l-2.83-2.83"></path>
+                                    <path d="M22 12h-4"></path>
+                                    <path d="M19.07 4.93l-2.83 2.83"></path>
+                                </svg>
+                                History
+                            </a>
+                            <a href="/logout" class="profile-logout">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <button id="colorModeToggle" aria-pressed="false" aria-label="Toggle dark mode" class="theme-toggle-btn">
+                            <svg class="eye-icon" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle class="eye-open" cx="12" cy="12" r="3"></circle>
+                                <path class="eye-closed" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" style="display: none;"></path>
+                                <line class="eye-closed" x1="1" y1="1" x2="23" y2="23" style="display: none;"></line>
+                            </svg>
+                        </button>
+                    </li>
                 </ul>
             </nav>
         </div>

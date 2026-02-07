@@ -1,34 +1,34 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="marketGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#FF0000;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    <linearGradient id="tealGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3CB8B8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A7A7A;stop-opacity:1" />
     </linearGradient>
   </defs>
   
-  <!-- Background -->
-  <rect width="200" height="200" fill="#FFFFFF" rx="20"/>
+  <!-- Background circle (darker teal) -->
+  <circle cx="100" cy="120" r="70" fill="#1A7A7A"/>
   
-  <!-- Rising bars (left to right, ascending) -->
-  <rect x="35" y="130" width="14" height="35" fill="#FF0000" rx="2"/>
-  <rect x="55" y="110" width="14" height="55" fill="#FF3300" rx="2"/>
-  <rect x="75" y="85" width="14" height="80" fill="#FFB300" rx="2"/>
-  <rect x="95" y="55" width="14" height="110" fill="#FFD700" rx="2"/>
+  <!-- Upper circle (lighter teal) -->
+  <ellipse cx="100" cy="70" rx="75" ry="45" fill="#3CB8B8"/>
   
-  <!-- Rising trend line -->
-  <polyline points="42,130 62,110 82,85 102,55" stroke="#FF0000" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  <!-- White trend line (zigzag upward) -->
+  <path d="M 45 110 L 70 95 L 90 105 L 110 85 L 135 75" 
+        stroke="white" 
+        stroke-width="10" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
   
   <!-- Upward arrow -->
-  <g transform="translate(135, 45)">
-    <!-- Arrow shaft -->
-    <line x1="0" y1="35" x2="0" y2="5" stroke="#FF0000" stroke-width="4" stroke-linecap="round"/>
-    <!-- Arrow head -->
-    <polygon points="0,5 -7,18 0,12 7,18" fill="#FFD700"/>
+  <g transform="translate(155, 50) rotate(30)">
+    <path d="M 0 0 L 25 -15 L 30 -5 L 15 5 L 20 15 Z" 
+          fill="#3CB8B8"/>
   </g>
   
-  <!-- Growth sparks/highlights -->
-  <circle cx="50" cy="115" r="2.5" fill="#FFD700"/>
-  <circle cx="70" cy="90" r="2.5" fill="#FFD700"/>
-  <circle cx="90" cy="60" r="2.5" fill="#FF0000"/>
-  <circle cx="110" cy="35" r="2.5" fill="#FFD700"/>
+  <!-- Arrow shaft -->
+  <line x1="130" y1="80" x2="155" y2="55" 
+        stroke="#3CB8B8" 
+        stroke-width="8" 
+        stroke-linecap="round"/>
 </svg>

@@ -58,20 +58,16 @@ HISTORY → /history
 🔐 PASSWORD REQUIREMENTS
 ═══════════════════════════════════════════════════════════════════════════════════
 
-✓ Valid:    MyPassword@123
-✓ Valid:    Secret-Pass99
-✓ Valid:    Test@Pass1
+✓ Valid:    MyPassword123
+✓ Valid:    SecretPass99
+✓ Valid:    TestPass1
 
-✗ Invalid:  password      (no digit, no special char)
-✗ Invalid:  Pass123       (no special char)
-✗ Invalid:  !Password123  (special char at start)
-✗ Invalid:  Password123!  (special char at end)
+✗ Invalid:  password      (no digit)
+✗ Invalid:  Pass123       (too short)
 
 RULES:
   • Minimum 7 characters
   • At least 1 digit (0-9)
-  • At least 1 special char (!, -, ))
-  • Special char NOT at start or end
 
 ═══════════════════════════════════════════════════════════════════════════════════
 📝 COMMON COMMANDS

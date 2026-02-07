@@ -45,28 +45,12 @@ def validate_password(password):
     Validate password against strict rules:
     - More than 7 characters
     - At least 1 digit
-    - At least 1 special character (!, -, ))
-    - Special character NOT at beginning or end
     """
     if len(password) <= 7:
         return False, "Password must be longer than 7 characters"
     
     if not any(c.isdigit() for c in password):
         return False, "Password must contain at least 1 digit (0-9)"
-    
-    # Check for special characters: !, -, )
-    special_chars = set('!-)')
-    has_special = any(c in special_chars for c in password)
-    
-    if not has_special:
-        return False, "Password must contain at least 1 special character (!, -, ))"
-    
-    # Check special char not at beginning or end
-    if password[0] in special_chars:
-        return False, "Special character cannot be at the beginning of password"
-    
-    if password[-1] in special_chars:
-        return False, "Special character cannot be at the end of password"
     
     return True, "Valid password"
 

@@ -159,8 +159,6 @@ The application will be available at: **http://127.0.0.1:5000**
 3. Password must meet strict requirements:
    - More than 7 characters
    - At least 1 digit (0-9)
-   - At least 1 special character (!, -, ))
-   - Special character not at start/end
 4. Check email for verification link
 5. Click verification link (valid for 24 hours)
 6. Email verified - ready to login
@@ -405,13 +403,11 @@ app.run(host='127.0.0.1', port=5001)
 ```
 
 ### Password Validation Errors
-**Valid Password Example**: `MyPassword@123`
+**Valid Password Example**: `MyPassword123`
 
 **Invalid Examples**:
-- `password` - No digit or special character
-- `Pass123` - No special character
-- `!Password123` - Special character at start
-- `Password123!` - Special character at end
+- `password` - No digit
+- `Pass123` - Too short
 
 ---
 

@@ -113,19 +113,67 @@ document.addEventListener('DOMContentLoaded', function(){
     return res;
   };
 
+  // Profile dropdown toggle
+  const profileBtn = document.getElementById('profileBtn');
+  const profileDropdown = document.getElementById('profileDropdown');
+  
+  if(profileBtn && profileDropdown){
+    profileBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      profileDropdown.classList.toggle('show');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e){
+      if(!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)){
+        profileDropdown.classList.remove('show');
+      }
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        profileDropdown.classList.remove('show');
+      }
+    });
+  }
+
 });
-// Dark mode toggle handling (outside DOMContent to ensure functions are available)
+// Dark mode toggle handling with eye icon animation
 document.addEventListener('DOMContentLoaded', function(){
   const toggle = document.getElementById('colorModeToggle');
   const root = document.documentElement;
+  
   function applyDark(dark){
-    if(dark){ document.documentElement.classList.add('dark'); toggle.textContent='Light'; toggle.setAttribute('aria-pressed','true'); }
-    else { document.documentElement.classList.remove('dark'); toggle.textContent='Dark'; toggle.setAttribute('aria-pressed','false'); }
+    const openEyes = toggle.querySelectorAll('.eye-open');
+    const closedEyes = toggle.querySelectorAll('.eye-closed');
+    
+    if(dark){
+      document.documentElement.classList.add('dark');
+      toggle.setAttribute('aria-pressed','true');
+      toggle.setAttribute('aria-label','Switch to light mode');
+      // Show closed eye (dark mode active)
+      openEyes.forEach(el => el.style.display = 'none');
+      closedEyes.forEach(el => el.style.display = 'block');
+    } else {
+      document.documentElement.classList.remove('dark');
+      toggle.setAttribute('aria-pressed','false');
+      toggle.setAttribute('aria-label','Switch to dark mode');
+      // Show open eye (light mode active)
+      openEyes.forEach(el => el.style.display = 'block');
+      closedEyes.forEach(el => el.style.display = 'none');
+    }
   }
+  
   // init from localStorage
   const stored = localStorage.getItem('marketai_dark');
   applyDark(stored === '1');
+  
   if(toggle){
-    toggle.addEventListener('click', ()=>{ const isDark = document.documentElement.classList.toggle('dark'); applyDark(isDark); localStorage.setItem('marketai_dark', isDark ? '1' : '0'); });
+    toggle.addEventListener('click', ()=>{ 
+      const isDark = document.documentElement.classList.toggle('dark'); 
+      applyDark(isDark); 
+      localStorage.setItem('marketai_dark', isDark ? '1' : '0'); 
+    });
   }
 });

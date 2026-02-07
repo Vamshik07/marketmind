@@ -12,7 +12,7 @@ Complete authentication + user activity history system has been implemented for 
 - ✅ User signup with email verification
 - ✅ Login/logout with session management
 - ✅ Password reset with time-limited tokens
-- ✅ Strict password validation (7+ chars, digit, special char)
+- ✅ Strict password validation (7+ chars, digit)
 - ✅ Email verification (24h token expiry)
 - ✅ Password reset (1h token expiry)
 - ✅ Professional auth UI (signup, login, forgot-password, reset-password, verify-email, success/error pages)
@@ -153,8 +153,6 @@ Visit: **http://127.0.0.1:5000**
 ### Password Security ✅
 - Minimum 7 characters
 - At least 1 digit
-- At least 1 special character (!, -, ))
-- Special character not at start/end
 - Hashed with Werkzeug PBKDF2 (industry standard)
 
 ### Token Security ✅

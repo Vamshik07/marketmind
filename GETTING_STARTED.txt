@@ -51,7 +51,7 @@ Visit: http://127.0.0.1:5000
   ├─ User signup with email verification (24h token)
   ├─ Login/logout with session management
   ├─ Forgot password with email reset (1h token)
-  ├─ Strict password validation (7+ chars, digit, special char)
+  ├─ Strict password validation (7+ chars, digit)
   └─ Professional UI (signup, login, forgot-password, verify-email, etc.)
 
 ✅ USER HISTORY
@@ -148,8 +148,6 @@ Visit: http://127.0.0.1:5000
 PASSWORD SECURITY
 ├─ Minimum 7 characters
 ├─ At least 1 digit (0-9)
-├─ At least 1 special character (!, -, ))
-├─ Special character NOT at start/end
 └─ Hashed with Werkzeug PBKDF2 (industry standard)
 
 TOKEN SECURITY

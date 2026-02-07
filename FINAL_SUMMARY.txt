@@ -12,7 +12,7 @@ A **production-ready authentication + user history system** has been fully imple
 - User signup with email verification (signed tokens, 24h expiry)
 - Secure login with session management
 - Password reset with time-limited tokens (1h expiry)
-- Strict password validation (7+ chars, digit, special char)
+- Strict password validation (7+ chars, digit)
 - Professional UI with 10 new templates
 
 ### 2. **User Activity History** ✅
@@ -146,7 +146,6 @@ Visit: **http://127.0.0.1:5000**
 ### Password Security
 ✅ Minimum 7 characters
 ✅ At least 1 digit
-✅ At least 1 special character (!, -, ))
 ✅ PBKDF2 hashing with Werkzeug
 ✅ No plaintext storage
 

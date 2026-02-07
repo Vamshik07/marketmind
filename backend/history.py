@@ -3,9 +3,25 @@ User activity history tracking module
 Logs user actions for authenticated users only
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from backend.database import get_db
 import json
+
+# IST timezone (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_time():
+    """Get current time in IST"""
+    return datetime.now(IST)
+
+def utc_to_ist(utc_time):
+    """Convert UTC datetime to IST"""
+    if isinstance(utc_time, str):
+        utc_time = datetime.fromisoformat(utc_time)
+    if utc_time.tzinfo is None:
+        # Assume UTC if no timezone info
+        utc_time = utc_time.replace(tzinfo=timezone.utc)
+    return utc_time.astimezone(IST)
 
 def log_user_activity(user_id, page_url, page_title, action_type, metadata=None, ip_address=None, user_agent=None):
     """
@@ -39,7 +55,7 @@ def log_user_activity(user_id, page_url, page_title, action_type, metadata=None,
                 page_title,
                 action_type,
                 json.dumps(metadata) if metadata else None,
-                datetime.utcnow().isoformat(),
+                get_ist_time().isoformat(),
                 ip_address,
                 user_agent
             ))
@@ -99,7 +115,7 @@ def get_grouped_user_history(user_id, limit=500):
         ''', (user_id, limit))
         
         rows = cursor.fetchall()
-        now = datetime.utcnow()
+        now = get_ist_time()
         today = now.replace(hour=0, minute=0, second=0, microsecond=0)
         yesterday = today - timedelta(days=1)
         week_ago = today - timedelta(days=7)
@@ -115,8 +131,14 @@ def get_grouped_user_history(user_id, limit=500):
                 except:
                     row_dict['metadata'] = {}
             
-            # Parse timestamp
+            # Parse and convert timestamp to IST
             timestamp = datetime.fromisoformat(row_dict['timestamp'])
+            # If timestamp doesn't have timezone info, assume UTC and convert to IST
+            if timestamp.tzinfo is None:
+                timestamp = timestamp.replace(tzinfo=timezone.utc)
+            timestamp = timestamp.astimezone(IST)
+            # Update the timestamp in the dict with IST time
+            row_dict['timestamp'] = timestamp.isoformat()
             
             # Group by date
             if timestamp >= today:
@@ -168,7 +190,7 @@ def delete_old_history(user_id, days=90):
     """
     with get_db() as conn:
         cursor = conn.cursor()
-        cutoff = datetime.utcnow() - timedelta(days=days)
+        cutoff = get_ist_time() - timedelta(days=days)
         cursor.execute('''
             DELETE FROM user_history 
             WHERE user_id = ? AND timestamp < ?

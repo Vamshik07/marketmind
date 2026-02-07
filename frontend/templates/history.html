@@ -1,36 +1,393 @@
 {% extends 'base.html' %}
 {% block title %}Activity History{% endblock %}
 {% block content %}
-<div style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
-    <h1 style="margin-bottom: 0.5rem;"> Your Activity</h1>
-    <p style="color: #666; margin-bottom: 2rem;">Campaign, Pitch, and Lead Score history</p>
+<div class="history-page">
+    <h1 class="history-title">Your Activity</h1>
+    <p class="history-subtitle">Campaign, Pitch, and Lead Score history</p>
     
-    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-        <input type="text" id="search-box" placeholder="Search..." style="flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
-        <button onclick="clearAllHistory()" style="padding: 0.75rem 1.5rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">Clear All</button>
+    <div class="history-toolbar">
+        <input type="text" id="search-box" placeholder="Search..." class="history-search">
+        <button onclick="clearAllHistory()" class="history-clear-btn">Clear All</button>
     </div>
-    <div id="history-list" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><div style="padding: 3rem; text-align: center; color: #999;">Loading...</div></div>
+    <div id="history-list" class="history-list"><div class="history-loading">Loading...</div></div>
 </div>
 
 <!-- Modal for Full Content View -->
 <div id="content-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: white; border-radius: 12px; max-width: 800px; max-height: 80vh; overflow-y: auto; width: 90%; padding: 2rem; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-        <button onclick="closeModal()" style="position: absolute; top: 1rem; right: 1rem; background: #f0f0f0; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">×</button>
-        <h2 id="modal-title" style="margin-top: 0; margin-bottom: 1.5rem; color: #223CCF;"></h2>
-        <div id="modal-content" style="white-space: pre-wrap; line-height: 1.8; color: #333; font-size: 1rem; margin-bottom: 2rem;"></div>
-        <div style="display: flex; gap: 1rem;">
-            <button onclick="copyFromModal()" style="flex: 1; padding: 0.75rem 1.5rem; background: #0683D7; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">📋 Copy to Clipboard</button>
-            <button onclick="downloadFromModal()" style="flex: 1; padding: 0.75rem 1.5rem; background: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">⬇ Download as Text</button>
+    <div class="history-modal-card">
+        <button onclick="closeModal()" class="history-modal-close">×</button>
+        <h2 id="modal-title" class="history-modal-title"></h2>
+        <div id="modal-content" class="history-modal-content"></div>
+        <div class="history-modal-actions">
+            <button onclick="copyFromModal()" class="history-modal-btn history-modal-btn-primary">📋 Copy to Clipboard</button>
+            <button onclick="downloadFromModal()" class="history-modal-btn history-modal-btn-success">⬇ Download as Text</button>
         </div>
     </div>
 </div>
 
 <style>
+/* History Page - Light Mode Default */
+.history-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: transparent;
+}
+
+.history-page * {
+    font-family: Times New Roman, serif !important;
+}
+
+.history-title {
+    margin-bottom: 0.5rem;
+    color: #0f1724;
+    font-family: Times New Roman, serif;
+    font-size: 2rem;
+}
+
+.history-subtitle {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    font-family: Times New Roman, serif;
+}
+
+.history-toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.history-search {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid rgba(34, 60, 207, 0.2);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f1724;
+    font-family: Times New Roman, serif;
+    transition: all 0.3s ease;
+}
+
+.history-search::placeholder {
+    color: #6b7280;
+}
+
+.history-search:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.history-clear-btn {
+    padding: 0.75rem 1.5rem;
+    background: rgba(220, 53, 69, 0.9);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: Times New Roman, serif;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.history-clear-btn:hover {
+    background: rgba(220, 53, 69, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.history-list {
+    background: #ffffff;
+    border: 1.5px solid rgba(34, 60, 207, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(34, 60, 207, 0.08);
+}
+
+.history-loading,
+.history-empty {
+    padding: 3rem;
+    text-align: center;
+    color: #6b7280;
+    font-family: Times New Roman, serif;
+}
+
+.history-error {
+    padding: 2rem;
+    color: #dc3545;
+    font-family: Times New Roman, serif;
+}
+
+.history-group {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.history-group-title {
+    padding: 1rem 1.5rem;
+    background: #f8f9fc;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-family: Times New Roman, serif;
+    border-bottom: 1px solid rgba(34, 60, 207, 0.1);
+}
+
+.history-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(34, 60, 207, 0.08);
+    background: #ffffff;
+    color: #0f1724;
+    font-family: Times New Roman, serif;
+    transition: background 0.2s ease;
+}
+
+.history-item:hover {
+    background: #f8f9fc;
+}
+
+.history-item strong {
+    color: #0f1724;
+}
+
+.history-time,
+.history-toggle {
+    color: #6b7280;
+    font-family: Times New Roman, serif;
+}
+
+.history-details {
+    display: none;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(34, 60, 207, 0.1);
+    margin-top: 1rem;
+}
+
+.history-meta {
+    background: #f8f9fc;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #0f1724;
+    border: 1px solid rgba(34, 60, 207, 0.15);
+    font-family: Times New Roman, serif;
+}
+
+.history-result {
+    background: #ffffff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #2563eb;
+    font-family: Times New Roman, serif;
+    box-shadow: 0 2px 8px rgba(34, 60, 207, 0.08);
+}
+
+.history-result-content {
+    margin-top: 0.75rem;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #0f1724;
+}
+
+.history-result-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.history-result-actions button {
+    font-family: Times New Roman, serif !important;
+}
+
+.history-page button {
+    font-family: Times New Roman, serif !important;
+}
+
+.history-modal-card {
+    background: #ffffff;
+    border-radius: 12px;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 90%;
+    padding: 2rem;
+    position: relative;
+    border: 1.5px solid rgba(34, 60, 207, 0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.history-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #f8f9fc;
+    border: 1px solid rgba(34, 60, 207, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0f1724;
+    transition: all 0.2s ease;
+}
+
+.history-modal-close:hover {
+    background: rgba(34, 60, 207, 0.1);
+    transform: scale(1.05);
+}
+
+.history-modal-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #0f1724;
+    font-family: Times New Roman, serif;
+}
+
+.history-modal-content {
+    white-space: pre-wrap;
+    line-height: 1.8;
+    color: #0f1724;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    font-family: Times New Roman, serif;
+}
+
+.history-modal-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.history-modal-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #ffffff;
+    font-family: Times New Roman, serif;
+}
+
+.history-modal-btn-primary {
+    background: #0683D7;
+}
+
+.history-modal-btn-success {
+    background: #27ae60;
+}
+
 #content-modal {
     display: flex;
 }
 #content-modal[data-visible="false"] {
     display: none !important;
+}
+
+/* Dark Mode Styles */
+html.dark .history-title,
+:root.dark .history-title {
+    color: #f8fafc;
+}
+
+html.dark .history-subtitle,
+:root.dark .history-subtitle {
+    color: #9ca3af;
+}
+
+html.dark .history-search,
+:root.dark .history-search {
+    background: rgba(26, 36, 66, 0.6);
+    border-color: rgba(74, 99, 228, 0.3);
+    color: #e5e7eb;
+}
+
+html.dark .history-search::placeholder,
+:root.dark .history-search::placeholder {
+    color: #9ca3af;
+}
+
+html.dark .history-list,
+:root.dark .history-list {
+    background: rgba(26, 36, 66, 0.4);
+    border-color: rgba(74, 99, 228, 0.25);
+}
+
+html.dark .history-group-title,
+:root.dark .history-group-title {
+    background: rgba(15, 20, 32, 0.8);
+    color: #9ca3af;
+}
+
+html.dark .history-item,
+:root.dark .history-item {
+    background: rgba(10, 14, 22, 0.4);
+    color: #e5e7eb;
+}
+
+html.dark .history-item:hover,
+:root.dark .history-item:hover {
+    background: rgba(34, 60, 207, 0.1);
+}
+
+html.dark .history-item strong,
+:root.dark .history-item strong {
+    color: #f8fafc;
+}
+
+html.dark .history-time,
+html.dark .history-toggle,
+:root.dark .history-time,
+:root.dark .history-toggle {
+    color: #94a3b8;
+}
+
+html.dark .history-meta,
+:root.dark .history-meta {
+    background: rgba(15, 20, 32, 0.6);
+    border-color: rgba(74, 99, 228, 0.3);
+    color: #d1d5db;
+}
+
+html.dark .history-result,
+:root.dark .history-result {
+    background: rgba(15, 20, 32, 0.7);
+    border-left-color: #60a5fa;
+}
+
+html.dark .history-result-content,
+:root.dark .history-result-content {
+    color: #e5e7eb;
+}
+
+html.dark .history-modal-card,
+:root.dark .history-modal-card {
+    background: rgba(15, 20, 32, 0.98);
+    border-color: rgba(74, 99, 228, 0.35);
+}
+
+html.dark .history-modal-close,
+:root.dark .history-modal-close {
+    background: rgba(31, 41, 55, 0.8);
+    border-color: rgba(74, 99, 228, 0.3);
+    color: #f8fafc;
+}
+
+html.dark .history-modal-title,
+html.dark .history-modal-content,
+:root.dark .history-modal-title,
+:root.dark .history-modal-content {
+    color: #e5e7eb;
+}
+
+@media (max-width: 720px) {
+    .history-toolbar {
+        flex-direction: column;
+    }
 }
 </style>
 
@@ -50,7 +407,7 @@ async function loadHistory() {
         allHistory = json.data || {};
         filterHistory();
     } catch(err) {
-        document.getElementById('history-list').innerHTML = '<div style="padding: 2rem; color: #dc3545;">Error: ' + err.message + '</div>';
+        document.getElementById('history-list').innerHTML = '<div class="history-error">Error: ' + err.message + '</div>';
     }
 }
 
@@ -120,41 +477,48 @@ document.getElementById('content-modal')?.addEventListener('click', (e) => {
 
 function filterHistory() {
     const search = document.getElementById('search-box').value.toLowerCase();
+    const excludedActions = new Set(['login', 'logout']);
     const dates = ['Today', 'Yesterday', 'This week', 'Older'];
     let html = '';
-    const hasItems = Object.values(allHistory).some(items => items.some(item => !search || JSON.stringify(item).toLowerCase().includes(search)));
+    const hasItems = Object.values(allHistory).some(items => items.some(item => {
+        if (excludedActions.has(item.action_type)) return false;
+        return !search || JSON.stringify(item).toLowerCase().includes(search);
+    }));
     if (!hasItems) {
-        document.getElementById('history-list').innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;">No activity found</div>';
+        document.getElementById('history-list').innerHTML = '<div class="history-empty">No activity found</div>';
         return;
     }
     dates.forEach(date => {
-        const items = (allHistory[date] || []).filter(item => !search || JSON.stringify(item).toLowerCase().includes(search));
+        const items = (allHistory[date] || []).filter(item => {
+            if (excludedActions.has(item.action_type)) return false;
+            return !search || JSON.stringify(item).toLowerCase().includes(search);
+        });
         if (!items.length) return;
-        html += '<div style="border-bottom: 1px solid #eee;"><div style="padding: 1rem 1.5rem; background: #f5f5f5; font-weight: 600; color: #666; font-size: 0.9rem;">' + date + '</div>';
+        html += '<div class="history-group"><div class="history-group-title">' + date + '</div>';
         items.forEach(item => {
-            const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hour12: true});
             const icons = {'/campaign': '📋', '/pitch': '🎤', '/lead-score': '👤'};
             const icon = icons[item.page_url] || '';
             const toggleId = 'toggle-' + item.id;
             const contentId = 'content-' + item.id;
             
-            html += '<div style="padding: 1rem 1.5rem; border-bottom: 1px solid #f0f0f0; background: white;">';
+            html += '<div class="history-item">';
             html += '<div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleDetails(\'' + contentId + '\', \'' + toggleId + '\')">';
             html += '<div style="display: flex; align-items: center; gap: 1rem; flex: 1;">';
             html += '<span style="font-size: 1.5rem;">' + icon + '</span>';
             html += '<div>';
-            html += '<strong>' + item.page_title + '</strong><br><small style="color: #999;">' + time + '</small>';
+            html += '<strong>' + item.page_title + '</strong><br><small class="history-time">' + time + '</small>';
             html += '</div>';
             html += '</div>';
-            html += '<span id="' + toggleId + '" style="font-size: 1.2rem; color: #999; transition: transform 0.2s;">▶</span>';
+            html += '<span id="' + toggleId + '" class="history-toggle" style="font-size: 1.2rem; transition: transform 0.2s;">▶</span>';
             html += '</div>';
             
             // Details section (expandable)
-            html += '<div id="' + contentId + '" style="display: none; padding: 1rem 0; border-top: 1px solid #f0f0f0; margin-top: 1rem;">';
+            html += '<div id="' + contentId + '" class="history-details">';
             
             // Show input data and result from metadata
             if (item.metadata) {
-                html += '<div style="background: #f9f9f9; padding: 1rem; border-radius: 6px; font-size: 0.95rem;">';
+                html += '<div class="history-meta">';
                 
                 // Campaign
                 if (item.action_type === 'campaign_generated' && item.metadata.product) {
@@ -162,12 +526,14 @@ function filterHistory() {
                     html += '<div style="margin-top: 0.5rem;"><strong>Audience:</strong> ' + escapeHtml(item.metadata.audience) + '</div>';
                     html += '<div style="margin-top: 0.5rem;"><strong>Platform:</strong> ' + escapeHtml(item.metadata.platform) + '</div>';
                     if (item.metadata.result) {
-                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">';
-                        html += '<div style="background: #e8f5e9; padding: 1rem; border-radius: 6px; border-left: 4px solid #27ae60;">';
+                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid rgba(148, 163, 184, 0.2);">';
+                        html += '<div class="history-result" style="border-left-color: #27ae60;">';
                         html += '<strong style="color: #27ae60;">📋 Generated Campaign</strong>';
-                        html += '<div style="margin-top: 0.75rem; max-height: 300px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; color: #333;">' + escapeHtml(item.metadata.result) + '</div>';
-                        html += '<button onclick="openModal(\'Campaign Output\', ' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-right: 0.5rem;">👁 View Full</button>';
-                        html += '<button onclick="copyToClipboard(' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">📋 Copy</button>';
+                        html += '<div class="history-result-content">' + escapeHtml(item.metadata.result) + '</div>';
+                        html += '<div class="history-result-actions">';
+                        html += '<button onclick="openModal(\'Campaign Output\', ' + JSON.stringify(item.metadata.result) + ')" style="padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">👁 View Full</button>';
+                        html += '<button onclick="copyToClipboard(' + JSON.stringify(item.metadata.result) + ')" style="padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">📋 Copy</button>';
+                        html += '</div>';
                         html += '</div>';
                     }
                 }
@@ -177,12 +543,14 @@ function filterHistory() {
                     html += '<div><strong>Product:</strong> ' + escapeHtml(item.metadata.product) + '</div>';
                     html += '<div style="margin-top: 0.5rem;"><strong>Persona:</strong> ' + escapeHtml(item.metadata.persona) + '</div>';
                     if (item.metadata.result) {
-                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">';
-                        html += '<div style="background: #f3e5f5; padding: 1rem; border-radius: 6px; border-left: 4px solid #8D3FD0;">';
+                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid rgba(148, 163, 184, 0.2);">';
+                        html += '<div class="history-result" style="border-left-color: #8D3FD0;">';
                         html += '<strong style="color: #8D3FD0;">🎤 Generated Pitch</strong>';
-                        html += '<div style="margin-top: 0.75rem; max-height: 300px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; color: #333;">' + escapeHtml(item.metadata.result) + '</div>';
-                        html += '<button onclick="openModal(\'Pitch Output\', ' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-right: 0.5rem;">👁 View Full</button>';
-                        html += '<button onclick="copyToClipboard(' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #8D3FD0; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">📋 Copy</button>';
+                        html += '<div class="history-result-content">' + escapeHtml(item.metadata.result) + '</div>';
+                        html += '<div class="history-result-actions">';
+                        html += '<button onclick="openModal(\'Pitch Output\', ' + JSON.stringify(item.metadata.result) + ')" style="padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">👁 View Full</button>';
+                        html += '<button onclick="copyToClipboard(' + JSON.stringify(item.metadata.result) + ')" style="padding: 0.5rem 1rem; background: #8D3FD0; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">📋 Copy</button>';
+                        html += '</div>';
                         html += '</div>';
                     }
                 }
@@ -194,10 +562,10 @@ function filterHistory() {
                     html += '<div style="margin-top: 0.5rem;"><strong>Need:</strong> ' + escapeHtml(item.metadata.need) + '</div>';
                     html += '<div style="margin-top: 0.5rem;"><strong>Urgency:</strong> ' + escapeHtml(item.metadata.urgency) + '</div>';
                     if (item.metadata.result) {
-                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">';
-                        html += '<div style="background: #e3f2fd; padding: 1rem; border-radius: 6px; border-left: 4px solid #0683D7;">';
+                        html += '<hr style="margin: 1rem 0; border: none; border-top: 1px solid rgba(148, 163, 184, 0.2);">';
+                        html += '<div class="history-result" style="border-left-color: #0683D7;">';
                         html += '<strong style="color: #0683D7;">👤 Lead Score Result</strong>';
-                        html += '<div style="margin-top: 0.75rem; max-height: 300px; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; color: #333;">' + escapeHtml(item.metadata.result) + '</div>';
+                        html += '<div class="history-result-content">' + escapeHtml(item.metadata.result) + '</div>';
                         html += '<button onclick="openModal(\'Lead Score Output\', ' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; margin-right: 0.5rem;">👁 View Full</button>';
                         html += '<button onclick="copyToClipboard(' + JSON.stringify(item.metadata.result) + ')" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #0683D7; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">📋 Copy</button>';
                         html += '</div>';

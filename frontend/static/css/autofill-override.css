@@ -1,0 +1,40 @@
+/* Override browser autofill backgrounds */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-webkit-autofill:invalid {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: #f0f4ff !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Ensure all inputs have transparent background */
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="search"],
+textarea,
+select {
+    background: transparent !important;
+    color: #f0f4ff !important;
+}
+
+/* Override Chrome autofill dropdown */
+input:-webkit-autofill {
+    -webkit-appearance: none;
+}
+
+/* For password fields */
+input[type="password"]:-webkit-autofill {
+    -webkit-text-fill-color: #f0f4ff !important;
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+}
+
+/* For email fields */
+input[type="email"]:-webkit-autofill {
+    -webkit-text-fill-color: #f0f4ff !important;
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+}

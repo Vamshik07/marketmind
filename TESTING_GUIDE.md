@@ -231,18 +231,15 @@ Server runs on: `http://127.0.0.1:5000`
 **Test Cases**:
 ```
 Valid passwords:
-✓ Test@Pass123
-✓ MyPassword!
-✓ Secret-Pass99
-✓ A1bC2dE3-fGh!
+✓ TestPass123
+✓ MyPassword9
+✓ SecretPass99
+✓ A1bC2dE3fGh
 
 Invalid passwords:
-✗ test           (too short, no special char)
-✗ password       (no number, no special char)
-✗ 123456         (no letter, no special char)
-✗ !MyPass123     (special char at start)
-✗ MyPass123!     (special char at end)
-✗ MyPass123@     (special char @, needs !, -, or ))
+✗ test           (too short)
+✗ password       (no number)
+✗ Pass123        (too short)
 ```
 
 **Expected Outcome**:

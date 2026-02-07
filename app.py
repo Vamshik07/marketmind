@@ -71,6 +71,11 @@ def require_login(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.context_processor
+def inject_user():
+    """Make current user available in all templates"""
+    return dict(current_user=get_current_user())
+
 # ==================== AUTHENTICATION ROUTES ====================
 
 @app.route('/signup', methods=['GET', 'POST'])

@@ -47,7 +47,7 @@ MarketMind is a **Flask-based AI marketing tools platform** with **complete user
 #### Signup
 - [x] Registration form with name, email, password
 - [x] Email format validation
-- [x] Password strength validation (length, digits, special chars)
+- [x] Password strength validation (length, digits)
 - [x] Duplicate email detection
 - [x] Password hashing with Werkzeug PBKDF2
 - [x] User creation in SQLite database
@@ -153,8 +153,6 @@ MarketMind is a **Flask-based AI marketing tools platform** with **complete user
 - [x] Strict password validation rules
 - [x] Minimum 7 characters
 - [x] At least 1 digit (0-9)
-- [x] At least 1 special character (!, -, ))
-- [x] Special character not at start/end
 - [x] No plaintext password storage
 - [x] Password rules displayed to user
 

@@ -13,7 +13,7 @@ Complete authentication + user history system has been implemented and delivered
    - User signup with email verification
    - Secure login/logout with sessions
    - Password reset with email tokens
-   - Strict password validation (7+ chars, digit, special char)
+   - Strict password validation (7+ chars, digit)
    - Professional authentication UI (10 new templates)
 
 ✅ **User Activity History**

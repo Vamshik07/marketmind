@@ -23,8 +23,6 @@ This system implements a **production-quality authentication and user activity t
 **Password Rules (Strict)**:
 - More than 7 characters
 - At least 1 digit (0-9)
-- At least 1 special character (!, -, ))
-- Special character NOT at beginning or end
 
 #### 3. **EMAIL SERVICE** (`backend/email_utils.py`)
 - ✅ Gmail SMTP integration (smtp.gmail.com:465)

@@ -165,9 +165,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
   
-  // init from localStorage
-  const stored = localStorage.getItem('marketai_dark');
-  applyDark(stored === '1');
+  // init in light mode every time
+  applyDark(false);
+  localStorage.setItem('marketai_dark', '0');
   
   if(toggle){
     toggle.addEventListener('click', ()=>{ 

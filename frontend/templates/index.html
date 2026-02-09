@@ -13,7 +13,7 @@
 </section>
 
 <!-- Feature Cards Section -->
-<section class="features-section hidden" id="features">
+<section class="features-section hidden" id="features" hidden aria-hidden="true">
     <div class="features-container">
         <div class="features-grid">
             <!-- Campaign Generator Card -->
@@ -93,10 +93,18 @@
 const getStartedBtn = document.getElementById('getStartedBtn');
 const featuresSection = document.getElementById('features');
 
+if (featuresSection) {
+    featuresSection.classList.add('hidden');
+    featuresSection.setAttribute('hidden', '');
+    featuresSection.setAttribute('aria-hidden', 'true');
+}
+
 if (getStartedBtn && featuresSection) {
     getStartedBtn.addEventListener('click', (e) => {
         e.preventDefault();
         featuresSection.classList.remove('hidden');
+        featuresSection.removeAttribute('hidden');
+        featuresSection.setAttribute('aria-hidden', 'false');
         featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 }
